@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Consumo de API con Fetch</title>
+</head>
+<body>
+  <h1>Ejercicio 11 - Consumo de API con AJAX</h1>
+  <!-- Prepara un botón para iniciar el consumo de la API de GitHub y mostrar la información del usuario -->
+  <!-- El botón inicia la carga de publicaciones desde la API de GitHub que se agregan al div resultado -->
+  <button id="botonCargar">Cargar datos</button>
+  <div id="resultado"></div>
+
+  <!-- Cargar jQuery para realizar la petición AJAX -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+  <!-- Script que realiza la petición AJAX a la API de GitHub -->
+  <script>
+    // 1. Asociar la rutina al botón cuando el documento esté listo
+    $(document).ready(function () {
+      $('#botonCargar').on('click', cargarDatos);
+
+      // 2. Función que consulta la API con AJAX de jQuery
+      function cargarDatos() {
+        const resultado = $('#resultado').empty();
+        const url = 'https://api.github.com/users/mojodna';
+
+        $.ajax({
+          url: url,
+          method: 'GET',
+          dataType: 'json',
+          success: function (datos) {
+            console.log('Los datos recibidos del usuario mojodna son:', datos);
+
+            $('<p>').text(`Petición => Login: ${datos.login}, URL: ${datos.html_url}`).appendTo(resultado);
+
+            Object.entries(datos).forEach(([atributo, valor]) => {
+              $('<p>').html(`Atributo <strong>${atributo}</strong>: ${valor}`).appendTo(resultado);
+            });
+          },
+          error: function (xhr, textStatus, errorThrown) {
+            console.error('No se pudo cargar la información del usuario:', textStatus, errorThrown);
+            const mensaje = xhr.status ? `Error HTTP: ${xhr.status} - ${xhr.statusText}` : `Error al conectar con la API: ${errorThrown || textStatus}`;
+            $('<p>').text(mensaje).appendTo(resultado);
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

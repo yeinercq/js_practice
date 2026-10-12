@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Consumo de API con XHR</title>
+</head>
+<body>
+  <h1>Ejercicio 7 - Consumo de API con XHR</h1>
+  <!-- Prepara un botón para iniciar el consumo de la API de GitHub y mostrar la información del usuario -->
+  <!-- El botón inicia la carga de publicaciones desde la API de GitHub que se agregan al div resultado -->
+  <button id="botonCargar">Cargar datos</button>
+  <div id="resultado"></div>
+
+  <!-- Script que realiza la petición XHR a la API de GitHub y muestra la información del usuario -->
+  <script>
+    // 1. Referencias al DOM
+    const botonCargar = document.getElementById('botonCargar');
+    const resultado = document.getElementById('resultado');
+
+    // 2. Función que implementa la rutina XHR
+    function cargarDatos() {
+      // Limpiar contenido previo
+      resultado.innerHTML = '';
+      // Url de la API de GitHub para obtener información del usuario
+      const url = 'https://api.github.com/users/1'
+      // Crear la instancia de XHR
+      const xhr = new XMLHttpRequest();
+
+      // Configurar la petición (método, URL, async)
+      xhr.open('GET', url, true);
+
+      // Definir qué hacer cuando cambie el estado
+      xhr.onreadystatechange = function () {
+        // readyState 4 = operación completada
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            // Parsear la respuesta JSON
+            const datos = JSON.parse(xhr.responseText);
+            console.log("Los datos recibidos son: ", datos);
+            
+            // Crear un <p> con la información del usuario
+            const p = document.createElement('p');
+            p.innerHTML = `Petición => Login: ${datos.login}, URL: ${datos.html_url}`;
+            resultado.appendChild(p);
+
+            // Por cada atributo y valor en los datos lo agrega al div resultado
+            Object.entries(datos).forEach(([atributo, valor]) => {
+              const p = document.createElement('p');
+              p.innerHTML = `${atributo}: ${valor}`;
+              resultado.appendChild(p);
+            });
+          } else {
+            // Manejo de errores HTTP
+            const p = document.createElement('p');
+            p.innerHTML = `Error: ${xhr.status} - ${xhr.statusText}`;
+            resultado.appendChild(p);
+          }
+        }
+      };
+
+      // Manejo de errores de red
+      xhr.onerror = function () {
+        const p = document.createElement('p');
+        p.innerHTML = 'Error de red al conectar con la API.';
+        resultado.appendChild(p);
+      };
+
+      // Enviar la petición
+      xhr.send();
+    }
+
+    // 3. Asociar la rutina al botón
+    botonCargar.addEventListener('click', cargarDatos);
+  </script>
+</body>
+</html>

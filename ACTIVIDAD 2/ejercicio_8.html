@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Consumo de API con Fetch</title>
+</head>
+<body>
+  <h1>Ejercicio 8 - Consumo de API con Fetch</h1>
+  <!-- Prepara un botón para iniciar el consumo de la API de GitHub y mostrar la información del usuario -->
+  <!-- El botón inicia la carga de publicaciones desde la API de GitHub que se agregan al div resultado -->
+  <button id="botonCargar">Cargar datos</button>
+  <div id="resultado"></div>
+
+  <!-- Script que realiza la petición Fetch a la API de GitHub y muestra la información del usuario -->
+  <script>
+    // 1. Referencias al DOM
+    const botonCargar = document.getElementById('botonCargar');
+    const resultado = document.getElementById('resultado');
+
+    // 2. Función que consulta la API con Fetch
+    function cargarDatos() {
+      // Limpiar contenido previo
+      resultado.innerHTML = '';
+      const url = 'https://api.github.com/users/1';
+
+      fetch(url)
+        .then(respuesta => {
+          if (!respuesta.ok) {
+            throw new Error(`Error HTTP: ${respuesta.status} - ${respuesta.statusText}`);
+          }
+          return respuesta.json();
+        })
+        .then(datos => {
+          console.log('Los datos recibidos son:', datos);
+
+          const p = document.createElement('p');
+          p.textContent = `Petición => Login: ${datos.login}, URL: ${datos.html_url}`;
+          resultado.appendChild(p);
+
+          // Mostrar cada atributo y su valor en el div resultado
+          Object.entries(datos).forEach(([atributo, valor]) => {
+            const parrafo = document.createElement('p');
+            parrafo.innerHTML = `atributo <strong>${atributo}</strong>`;
+            resultado.appendChild(parrafo);
+          });
+        })
+        .catch(error => {
+          console.error('No se pudo cargar la información del usuario:', error);
+          const p = document.createElement('p');
+          p.innerHTML = `Error al conectar con la API: ${error.message}`;
+          resultado.appendChild(p);
+        });
+    }
+
+    // 3. Asociar la rutina al botón
+    botonCargar.addEventListener('click', cargarDatos);
+  </script>
+</body>
+</html>
